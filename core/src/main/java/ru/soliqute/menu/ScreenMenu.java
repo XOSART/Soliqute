@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import ru.soliqute.BlackEffect;
 import ru.soliqute.Main;
 import ru.soliqute.MyButton;
+import ru.soliqute.game.GameScreen1;
 
 public class ScreenMenu implements Screen {
     private Main main;
@@ -31,37 +32,42 @@ public class ScreenMenu implements Screen {
 
     private Texture backgroundAtlas, buttonAtlas;
     private TextureRegion[] background = new TextureRegion[2];
-    private TextureRegion buttonPlayTexture;
+    private TextureRegion textureButtonPlay;
     private MyButton buttonPlay, buttonSettings, buttonTouch;
     public Sound soundButtonClick1, soundButtonClick2;
 
     private ScreenText screenText;
     private ScreenSettings screenSettings;
+    private GameScreen1 gameScreen1;
 
     public ScreenMenu(Main main) {
         this.main = main;
         batch = main.batch;
         camera = main.camera;
         touch = main.touch;
+
+        blackEffect = new BlackEffect();
+
         font = main.font;
         fontBold = main.fontBold;
 
         screenText = new ScreenText(main);
         screenSettings = new ScreenSettings(main);
+        gameScreen1 = new GameScreen1(main);
+        main.screens.put("gameScreen1", gameScreen1);
         main.screens.put("screenText", screenText);
         main.screens.put("screenSettings", screenSettings);
 
-        backgroundAtlas = new Texture("sprites/background_menu.jpg");
-        buttonAtlas = new Texture("sprites/buttons.png");
-        buttonPlayTexture = new TextureRegion(buttonAtlas, 0, 0, 450, 450);
+        backgroundAtlas = main.backgroundAtlas;
+        buttonAtlas = main.buttonAtlas;
+        textureButtonPlay = new TextureRegion(buttonAtlas, 0, 0, 450, 450);
         background[0] = new TextureRegion(backgroundAtlas, 0, 0, 1020, 1148 / 2);
         background[1] = new TextureRegion(backgroundAtlas, 0, 1148 / 2, 1020, 1148 / 2);
-        blackEffect = new BlackEffect();
 
-        soundButtonClick1 = Gdx.audio.newSound(Gdx.files.internal("sounds/button_click_1.mp3"));
-        soundButtonClick2 = Gdx.audio.newSound(Gdx.files.internal("sounds/button_click_2.mp3"));
+        soundButtonClick1 = main.soundButtonClick1;
+        soundButtonClick2 = main.soundButtonClick2;
 
-        buttonPlay = new MyButton(buttonPlayTexture, 340, 260, 260);
+        buttonPlay = new MyButton(textureButtonPlay, 340, 260, 260);
         buttonSettings = new MyButton(fontBold, "НАСТРОЙКИ", 180);
         buttonTouch = new MyButton(fontBold, "НАЖМИ", 770);
 
@@ -96,6 +102,8 @@ public class ScreenMenu implements Screen {
 
             if(buttonPlay.hit(touch.x, touch.y)) {
                 soundButtonClick2.play(0.3f);
+                blackEffect.blackStart("gameScreen1", true);
+                main.setScreen(gameScreen1);
             }
         }
 
